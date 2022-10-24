@@ -28,8 +28,8 @@ public class HomeController {
 	@ResponseBody
 	@RequestMapping("main")
 	public List<List<Wuxia>> Main() { //중복 로그인 처리
-		List<Wuxia> wuxialist1 = wuxiaRepository.findAllByOrderByLikesDesc().subList(0, 12);
-		List<Wuxia> wuxialist2 = wuxiaRepository.findAllByOrderByViewDesc().subList(0, 12);
+		List<Wuxia> wuxialist1 = wuxiaRepository.findAllByOrderByViewDesc().subList(0, 12);
+		List<Wuxia> wuxialist2 = wuxiaRepository.findAllByOrderByLikesDesc().subList(0, 12);
 		List<Wuxia> wuxialist3 = wuxiaRepository.findAllByOrderByRateDesc().subList(0, 12);
 		List<List<Wuxia>> list = new ArrayList<>();
 		list.add(wuxialist1);
@@ -97,12 +97,16 @@ public class HomeController {
 		} //세션이 있다는 뜻이므로 세션에 저장된 userEmail을 가져옴
 		String userEmail = (String) request.getSession(false).getAttribute(request.getSession(false).getId());
 		if(likesRepository.findByUserEmailAndTitle(userEmail, wuxia.getTitle()) != null) {
+			likesRepository.delete(likesRepository.findByUserEmailAndTitle(userEmail, wuxia.getTitle()));
+			wuxia.setLikes(wuxia.getLikes()-1);
+			wuxiaRepository.save(wuxia);
 			return false;
 		}
 		Likes likes = new Likes();
 		likes.setUserEmail(userEmail);
 		likes.setTitle(wuxia.getTitle());
 		likesRepository.save(likes);
+		wuxia.setLikes(wuxia.getLikes()+1);
 		wuxiaRepository.save(wuxia);
 		return true;
 	}
