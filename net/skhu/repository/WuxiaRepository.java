@@ -13,6 +13,10 @@ public interface WuxiaRepository extends JpaRepository<Wuxia,Integer> {
 
 	List<Wuxia> findAllByTitleStartsWith(String title);
 
+	List<Wuxia> findAllByTitleContaining(String title);
+
+	List<Wuxia> findAllByTitleContainingOrderByViewDesc(String title);
+
 	List<Wuxia> findAllByOrderByViewDesc();
 
 	List<Wuxia> findAllByOrderByRateDesc();

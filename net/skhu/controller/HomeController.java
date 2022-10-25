@@ -54,6 +54,13 @@ public class HomeController {
 	}
 
 	@ResponseBody
+	@RequestMapping("search")
+	public List<Wuxia> Search(@RequestBody Wuxia wuxia) {
+		List<Wuxia> wuxialist = wuxiaRepository.findAllByTitleContainingOrderByViewDesc(wuxia.getTitle());
+		return wuxialist;
+	}
+
+	@ResponseBody
 	@RequestMapping("listbylikes")
 	public List<Wuxia> ListByLikes() {
 		List<Wuxia> wuxialist = wuxiaRepository.findAllByOrderByLikesDesc();
