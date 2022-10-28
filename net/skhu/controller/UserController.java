@@ -43,7 +43,7 @@ public class UserController {
 				return "overlap"; //중복 로그인임을 알림
 			}
 			//중복 로그인이 아니며 비밀번호가 같으니 로그인 성공
-			LoginSuccess(request, user, response);
+			LoginSuccess(request, targetUser, response);
 			return "true";
 		}
 		return "false";
@@ -54,7 +54,8 @@ public class UserController {
 	public String OverLap(HttpServletRequest request, @RequestBody User user, HttpServletResponse response) { //중복 로그인 처리
 		sessions.get(user.getUserEmail()).invalidate(); //세션맵에서 세션을 가져온 후 세션 만료
 		sessions.remove(user.getUserEmail());
-		LoginSuccess(request, user, response);
+		User targetUser = userRepository.findByUserEmail(user.getUserEmail()); //userEmail로 찾음
+		LoginSuccess(request, targetUser, response);
 		return "true";
 	}
 
@@ -80,7 +81,7 @@ public class UserController {
 			userRepository.save(user);
 			return "회원가입 완료";
 		}
-		return "회원가입 실패";
+		return "이미 등록된 아이디입니다.";
 	}
 
 	@ResponseBody
@@ -105,7 +106,7 @@ public class UserController {
 		HttpSession session = request.getSession(); //세션을 발급하고
 		session.setAttribute(session.getId(), user.getUserEmail()); //세션에 값 설정
 		sessions.put(user.getUserEmail(), session); //세션 맵에 추가
-		Cookie cookie = new Cookie("login","true"); //로그인 되었음을 알려주는 쿠키 생성
+		Cookie cookie = new Cookie("login", user.getUserNickname()); //로그인 되었음을 알려주는 쿠키 생성
 		cookie.setMaxAge(1800);
 		response.addCookie(cookie); //응답에 쿠키 추가
 	}

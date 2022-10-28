@@ -13,7 +13,7 @@ public interface WuxiaRepository extends JpaRepository<Wuxia,Integer> {
 
 	List<Wuxia> findAllByTitleStartsWith(String title);
 
-	List<Wuxia> findAllByTitleContaining(String title);
+	List<Wuxia> findAllByTitleContainingOrWriterContainingOrderByViewDesc(String title, String writer);
 
 	List<Wuxia> findAllByTitleContainingOrderByViewDesc(String title);
 
