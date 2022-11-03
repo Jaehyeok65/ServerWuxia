@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import net.skhu.entity.Likes;
 import net.skhu.entity.Rate;
 import net.skhu.entity.Wuxia;
+import net.skhu.model.Pagination;
 import net.skhu.repository.LikesRepository;
 import net.skhu.repository.RateRepository;
 import net.skhu.repository.WuxiaRepository;
@@ -135,6 +136,38 @@ public class HomeController {
 		wuxiaRepository.save(wuxia);
 		return true;
 	}
+
+	@ResponseBody
+	@RequestMapping("pagebyview")
+	public List<Wuxia> PageByView(@RequestBody Pagination pagination) {
+		//System.out.println(pagination.getPg());
+		List<Wuxia> wuxialist = wuxiaRepository.findAllByViewDesc(pagination);
+		return wuxialist;
+	}
+
+	@ResponseBody
+	@RequestMapping("pagebyrate")
+	public List<Wuxia> PageByRate(@RequestBody Pagination pagination) {
+		List<Wuxia> wuxialist = wuxiaRepository.findAllByRateDesc(pagination);
+		return wuxialist;
+	}
+
+	@ResponseBody
+	@RequestMapping("pagebylikes")
+	public List<Wuxia> PageByLikes(@RequestBody Pagination pagination) {
+		List<Wuxia> wuxialist = wuxiaRepository.findAllByLikesDesc(pagination);
+		return wuxialist;
+	}
+
+	@ResponseBody
+    @RequestMapping("total")
+    public int TotalByLikes(@RequestBody Pagination pagination) {
+		List<Wuxia> wuxialist = wuxiaRepository.findAllByLikesDesc(pagination);
+		System.out.println(pagination.getRecordCount());
+        return pagination.getRecordCount();
+    }
+
+
 
 
 

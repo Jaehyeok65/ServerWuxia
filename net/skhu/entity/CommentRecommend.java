@@ -9,19 +9,12 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Wuxia {
+public class CommentRecommend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
 
-    String title;
-    String writer;
-    String content;
-    String url;
-    String link;
-    int view;
-    int likes;
-    Double rate;
-    int people;
+    String userEmail;
+    int commentId;
 
 }

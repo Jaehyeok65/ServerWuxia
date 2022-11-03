@@ -8,4 +8,6 @@ import net.skhu.entity.User;
 public interface UserRepository extends JpaRepository<User,Integer> {
 
 	User findByUserEmail(String userEmail);
+
+	User findByUserNickname(String nickname);
 }

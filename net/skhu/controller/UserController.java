@@ -44,8 +44,10 @@ public class UserController {
 			}
 			//중복 로그인이 아니며 비밀번호가 같으니 로그인 성공
 			LoginSuccess(request, targetUser, response);
-			return "true";
+			return targetUser.getUserNickname();
 		}
+		HttpSession sessions = request.getSession();
+		sessions.setMaxInactiveInterval(0);
 		return "false";
 	}
 
@@ -56,32 +58,48 @@ public class UserController {
 		sessions.remove(user.getUserEmail());
 		User targetUser = userRepository.findByUserEmail(user.getUserEmail()); //userEmail로 찾음
 		LoginSuccess(request, targetUser, response);
-		return "true";
+		return targetUser.getUserNickname();
 	}
 
 	@ResponseBody
 	@RequestMapping("sessioncheck")
-	public Boolean SessionCheck(HttpServletRequest request, HttpServletResponse response,
+	public String SessionCheck(HttpServletRequest request, HttpServletResponse response,
 			@CookieValue(value = "login", required = false) Cookie cookie) {
 		if(request.getSession(false) == null) { //세션이 null이라면 요청 만료
 			if(cookie != null) { //쿠키가 null이 아니라면 == 쿠키가 있다면
 				cookie.setMaxAge(0); //쿠키 만료
 				response.addCookie(cookie); //응답에 담아서 보냄 == 쿠키 삭제
-				return true;
+				return "true";
 			}
 		}
-		return false;
+		else { //Session이 null이 아니라면 로그인 상태 갱신
+			String userEmail = (String) request.getSession(false).getAttribute(request.getSession(false).getId());
+			User targetUser = userRepository.findByUserEmail(userEmail); //userEmail로 찾음
+			if(cookie == null) { //세션이 유지되어있는데도 쿠키가 없다면 쿠키를 만들어서 전달해줌
+			Cookie cookies = new Cookie("login", "true"); //로그인 되었음을 알려주는 쿠키 생성
+			cookies.setMaxAge(1800);
+			response.addCookie(cookies); //응답에 담아서 보냄 == 쿠키 삭제
+			}
+			return targetUser.getUserNickname();
+		}
+		return "false";
 	}
 
 	@ResponseBody
 	@RequestMapping("signup")
 	public String SignUp(@RequestBody User user) {
 		User targetUser = userRepository.findByUserEmail(user.getUserEmail()); //userEmail로 찾음
-		if(targetUser == null) {
+		User targetUser2 = userRepository.findByUserNickname(user.getUserNickname());
+		if(targetUser != null) {
+			return "이미 등록된 아이디입니다.";
+		}
+		else if(targetUser2 != null) {
+			return "이미 등록된 닉네임입니다.";
+		}
+		else {
 			userRepository.save(user);
 			return "회원가입 완료";
 		}
-		return "이미 등록된 아이디입니다.";
 	}
 
 	@ResponseBody
@@ -106,7 +124,7 @@ public class UserController {
 		HttpSession session = request.getSession(); //세션을 발급하고
 		session.setAttribute(session.getId(), user.getUserEmail()); //세션에 값 설정
 		sessions.put(user.getUserEmail(), session); //세션 맵에 추가
-		Cookie cookie = new Cookie("login", user.getUserNickname()); //로그인 되었음을 알려주는 쿠키 생성
+		Cookie cookie = new Cookie("login", "true"); //로그인 되었음을 알려주는 쿠키 생성
 		cookie.setMaxAge(1800);
 		response.addCookie(cookie); //응답에 쿠키 추가
 	}
