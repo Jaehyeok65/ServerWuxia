@@ -10,6 +10,11 @@ import lombok.Data;
 @Data
 public class PageList<Wuxia> {
 
-	Boolean end;
+	int total;
 	List<Wuxia> list;
+
+	public PageList(int total, List<Wuxia> list) {
+		this.total = total;
+		this.list = list;
+	}
 }

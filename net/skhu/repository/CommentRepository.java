@@ -9,8 +9,6 @@ import net.skhu.entity.Comment;
 
 public interface CommentRepository extends JpaRepository<Comment,Integer> {
 
-	List<Comment> findAllByOrderByViewDesc();
-
 	List<Comment> findAllByOrderByDateDesc();
 
 	List<Comment> findAllByOrderByRecommendDesc();
